@@ -1,0 +1,58 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+[x-cloak] {
+    display: none;
+}
+
+/* Global scrollbar styling */
+* {
+    scrollbar-width: thin;
+    scrollbar-color: #e2e8f0 transparent;
+}
+
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #e2e8f0;
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #cbd5e1;
+}
+
+/* Custom Scrollbar - Ghost effect (visible on hover) */
+.custom-scrollbar {
+    scrollbar-color: transparent transparent !important;
+}
+
+.custom-scrollbar:hover {
+    scrollbar-color: #cbd5e1 transparent !important;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+    background-color: transparent !important;
+}
+
+.custom-scrollbar:hover::-webkit-scrollbar-thumb {
+    background-color: #e2e8f0 !important;
+}
+
+/* Hide scrollbar by default for a cleaner look */
+.hide-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+.hide-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
