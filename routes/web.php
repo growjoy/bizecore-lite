@@ -5,6 +5,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DivisionController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\LandingController;
+use App\Http\Controllers\LoginController;
 use App\Http\Controllers\OnboardingController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ProjectController;
@@ -16,6 +17,10 @@ use Inertia\Inertia;
 Route::get('/', [LandingController::class, 'index'])->name('home');
 Route::get('/employees', [LandingController::class, 'employees'])->name('public.employees');
 Route::get('/projects', [LandingController::class, 'projects'])->name('public.projects');
+
+Route::get('/login', [LoginController::class, 'showLogin'])->name('login');
+Route::post('/login', [LoginController::class, 'login']);
+Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
 Route::get('/documentation', fn() => Inertia::render('Public/Documentation'))->name('documentation');
 Route::get('/api-reference', fn() => Inertia::render('Public/ApiReference'))->name('api.reference');
