@@ -17,6 +17,7 @@ class EmployeeController extends Controller
         $interns = Employee::with('division')->latest()->get()->map(function ($e) {
             $e->role_label = 'Intern';
             $e->is_user = false;
+            $e->unique_key = 'intern_' . $e->id; // unique key to avoid collision with user IDs
             return $e;
         });
 
@@ -28,6 +29,7 @@ class EmployeeController extends Controller
             ->map(function ($u) {
                 $u->role_label = $u->role === 'manager' ? 'Project Manager' : 'Field Worker';
                 $u->is_user = true;
+                $u->unique_key = 'user_' . $u->id; // unique key to avoid collision with intern IDs
                 return $u;
             });
 
@@ -42,6 +44,10 @@ class EmployeeController extends Controller
 
     public function store(Request $request)
     {
+        if ($request->user()->role === 'worker') {
+            abort(403, 'Unauthorized action.');
+        }
+
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:employees,email',
@@ -57,6 +63,10 @@ class EmployeeController extends Controller
 
     public function update(Request $request, Employee $employee)
     {
+        if ($request->user()->role === 'worker') {
+            abort(403, 'Unauthorized action.');
+        }
+
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'email' => ['required', 'email', Rule::unique('employees')->ignore($employee->id)],
@@ -72,6 +82,10 @@ class EmployeeController extends Controller
 
     public function destroy(Employee $employee)
     {
+        if (request()->user()->role === 'worker') {
+            abort(403, 'Unauthorized action.');
+        }
+
         $employee->delete();
         return redirect()->back()->with('success', 'Record removed successfully.');
     }

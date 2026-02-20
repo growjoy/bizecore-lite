@@ -90,14 +90,16 @@ class LandingController extends Controller
             });
 
         $allMembers = $interns->concat($users)->sortByDesc('created_at')->values()->map(function ($m) {
+            $isIntern = $m instanceof \App\Models\Employee;
             return [
-                'id' => $m->id,
-                'name' => $m->name,
-                'email' => $m->email,
-                'job_title' => $m->job_title ?? $m->role_label,
-                'division' => $m->division ? ['name' => $m->division->name] : null,
-                'status' => $m->status ?? 'active',
-                'is_intern' => $m instanceof \App\Models\Employee,
+                'id'         => $m->id,
+                'unique_key' => ($isIntern ? 'intern_' : 'user_') . $m->id, // prevent duplicate React keys
+                'name'       => $m->name,
+                'email'      => $m->email,
+                'job_title'  => $m->job_title ?? $m->role_label,
+                'division'   => $m->division ? ['name' => $m->division->name] : null,
+                'status'     => $m->status ?? 'active',
+                'is_intern'  => $isIntern,
                 'role_label' => $m->role_label,
             ];
         })->toArray();

@@ -99,3 +99,4 @@ Bizecore uses a specialized Vite configuration to separate public and private as
 
 *Engineered for High-Performance Teams & Strategic Growth.*
 *© 2024 Bizecore - Intelligence in Action.*
+# bizecore-lite

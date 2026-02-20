@@ -12,6 +12,10 @@ class UserController extends Controller
     public function index()
     {
         $user = auth()->user();
+        if ($user->role === 'worker') {
+            abort(403, 'Unauthorized action.');
+        }
+
         $query = User::latest();
 
         if ($user->role === 'admin') {
@@ -29,20 +33,30 @@ class UserController extends Controller
     public function store(Request $request)
     {
         $user = auth()->user();
-        $allowedRoles = 'admin,superadmin,manager,worker';
-
-        // Admins can only create workers
-        if ($user->role === 'admin') {
-            $allowedRoles = 'manager,worker';
-        } elseif ($user->role === 'manager') {
-            $allowedRoles = 'worker';
+        if ($user->role === 'worker') {
+            abort(403, 'Unauthorized action.');
         }
+
+        $allowedRoles = [];
+
+        // Define permissions
+        if ($user->role === 'superadmin') {
+            $allowedRoles = ['admin', 'superadmin', 'manager', 'worker'];
+        } elseif ($user->role === 'admin') {
+            $allowedRoles = ['manager', 'worker'];
+        } elseif ($user->role === 'manager') {
+            $allowedRoles = ['worker'];
+        } else {
+            abort(403, 'Unauthorized action.');
+        }
+
+        $allowedRolesStr = implode(',', $allowedRoles);
 
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8',
-            'role' => "required|in:$allowedRoles",
+            'role' => "required|in:$allowedRolesStr",
             'division_id' => 'nullable|exists:divisions,id',
         ]);
 
@@ -64,25 +78,35 @@ class UserController extends Controller
     public function update(Request $request, User $user)
     {
         $authUser = auth()->user();
-        $allowedRoles = 'admin,superadmin,manager,worker';
+        if ($authUser->role === 'worker') {
+            abort(403, 'Unauthorized action.');
+        }
+        
+        $allowedRoles = [];
 
         // Administrative privilege checks
-        if ($authUser->role === 'admin') {
+        if ($authUser->role === 'superadmin') {
+            $allowedRoles = ['admin', 'superadmin', 'manager', 'worker'];
+        } elseif ($authUser->role === 'admin') {
             if (!in_array($user->role, ['manager', 'worker'])) {
                 abort(403, 'Owners can only manage Managers and Workers.');
             }
-            $allowedRoles = 'manager,worker';
+            $allowedRoles = ['manager', 'worker'];
         } elseif ($authUser->role === 'manager') {
             if ($user->role !== 'worker') {
                 abort(403, 'Managers can only manage Workers.');
             }
-            $allowedRoles = 'worker';
+            $allowedRoles = ['worker'];
+        } else {
+            abort(403, 'Unauthorized action.');
         }
+
+        $allowedRolesStr = implode(',', $allowedRoles);
 
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
-            'role' => "required|in:$allowedRoles",
+            'role' => "required|in:$allowedRolesStr",
             'password' => 'nullable|string|min:8',
             'division_id' => 'nullable|exists:divisions,id',
         ]);
@@ -98,7 +122,7 @@ class UserController extends Controller
             'division_id' => $validated['division_id'] ?? $user->division_id,
         ]);
 
-        if ($validated['password']) {
+        if (!empty($validated['password'])) {
             $user->update(['password' => Hash::make($validated['password'])]);
         }
 
@@ -108,8 +132,9 @@ class UserController extends Controller
     public function destroy(User $user)
     {
         $authUser = auth()->user();
-
-        // Administrative privilege checks
+        if ($authUser->role === 'worker') {
+            abort(403, 'Unauthorized action.');
+        }
         if ($authUser->role === 'admin' && !in_array($user->role, ['manager', 'worker'])) {
             abort(403, 'Owners can only delete Managers and Workers.');
         }

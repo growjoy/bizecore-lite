@@ -119,7 +119,7 @@ export default function Employees({ auth, employees: interns, divisions, company
                         </thead>
                         <tbody className="divide-y divide-slate-100">
                             {interns.map((employee) => (
-                                <tr key={employee.id} className="hover:bg-slate-50/50 transition-all group">
+                                <tr key={employee.unique_key || employee.id} className="hover:bg-slate-50/50 transition-all group">
                                     <td className="px-8 py-6 whitespace-nowrap">
                                         <div className="flex items-center">
                                             <div className="h-12 w-12 flex-shrink-0 bg-indigo-50 text-indigo-600 rounded-2xl flex items-center justify-center font-bold text-sm border border-indigo-100 group-hover:bg-indigo-600 group-hover:text-white transition-all">

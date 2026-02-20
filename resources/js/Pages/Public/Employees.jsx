@@ -25,7 +25,7 @@ export default function Employees({ employees }) {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
                     {employees.data.map((employee) => (
-                        <div key={employee.id} className="group bg-white rounded-[2.5rem] p-10 border border-slate-100 shadow-sm hover:shadow-2xl hover:border-indigo-100 transition-all duration-500">
+                        <div key={employee.unique_key || employee.id} className="group bg-white rounded-[2.5rem] p-10 border border-slate-100 shadow-sm hover:shadow-2xl hover:border-indigo-100 transition-all duration-500">
                             <div className="flex items-center gap-6 mb-8">
                                 <div className="w-20 h-20 rounded-3xl bg-indigo-50 border border-indigo-100 flex items-center justify-center text-3xl font-black text-indigo-600 group-hover:bg-indigo-600 group-hover:text-white transition-all duration-500">
                                     {employee.name.charAt(0)}

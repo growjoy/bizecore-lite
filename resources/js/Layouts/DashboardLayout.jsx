@@ -70,50 +70,37 @@ export default function DashboardLayout({ children }) {
         }
     }, [flash?.success, flash?.error]);
 
-    const projectPaths = [
-        { name: 'Overview', href: route('dashboard'), icon: LayoutDashboard, active: route().current('dashboard') },
-        { name: 'Projects', href: route('dashboard.projects'), icon: Briefcase, active: route().current('dashboard.projects*') },
-        { name: 'Tasks', href: route('dashboard.tasks'), icon: CheckSquare, active: route().current('dashboard.tasks*') },
-    ];
-
     const hasOnboardingAccess = Boolean(auth.user.division_id) || auth.user.role === 'admin' || auth.user.role === 'superadmin';
 
-    if (hasOnboardingAccess) {
-        projectPaths.splice(1, 0, {
-            name: 'Onboarding',
-            href: route('dashboard.onboarding'),
-            icon: ClipboardCheck,
-            active: route().current('dashboard.onboarding')
-        });
-    }
-
-    projectPaths.push(
+    const projectPaths = [
+        { name: 'Overview', href: route('dashboard'), icon: LayoutDashboard, active: route().current('dashboard') },
+        ...(hasOnboardingAccess ? [{ name: 'Onboarding', href: route('dashboard.onboarding'), icon: ClipboardCheck, active: route().current('dashboard.onboarding') }] : []),
+        { name: 'Projects', href: route('dashboard.projects'), icon: Briefcase, active: route().current('dashboard.projects*') },
+        { name: 'Tasks', href: route('dashboard.tasks'), icon: CheckSquare, active: route().current('dashboard.tasks*') },
         { name: 'Divisions', href: route('dashboard.divisions'), icon: Building2, active: route().current('dashboard.divisions*') },
-        { name: 'Interns', href: route('dashboard.employees'), icon: Users, active: route().current('dashboard.employees*') }
-    );
+        { name: 'Interns', href: route('dashboard.employees'), icon: Users, active: route().current('dashboard.employees*') },
+    ];
+
+    const isAdminOrSuperAdmin = auth.user.role === 'admin' || auth.user.role === 'superadmin';
 
     const accountPaths = [
         { name: 'My Profile', href: route('dashboard.profile'), icon: UserCog, active: route().current('dashboard.profile') },
-    ];
-
-    if (auth.user.role === 'superadmin' || auth.user.role === 'admin') {
-        accountPaths.push({
+        ...(isAdminOrSuperAdmin ? [{
             name: 'User Management',
             href: route('dashboard.users'),
             icon: UserPlus,
             active: route().current('dashboard.users')
-        });
-    }
+        }] : []),
+    ];
 
-    const systemPaths = [];
-    if (auth.user.role === 'superadmin' || auth.user.role === 'admin') {
-        systemPaths.push({
+    const systemPaths = [
+        ...(isAdminOrSuperAdmin ? [{
             name: 'Bug Reports',
             href: route('dashboard.bug-reports.index'),
             icon: AlertCircle,
             active: route().current('dashboard.bug-reports.index')
-        });
-    }
+        }] : []),
+    ];
 
     const bugForm = useForm({
         title: '',
@@ -130,8 +117,6 @@ export default function DashboardLayout({ children }) {
             },
         });
     };
-
-    const isAdminOrSuperAdmin = auth.user.role === 'admin' || auth.user.role === 'superadmin';
 
     const backToHome = { name: 'Back to Website', href: route('home'), icon: X, active: false };
 

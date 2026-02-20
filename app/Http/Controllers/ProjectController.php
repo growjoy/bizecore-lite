@@ -20,6 +20,10 @@ class ProjectController extends Controller
 
     public function store(Request $request)
     {
+        if ($request->user()->role === 'worker') {
+            abort(403, 'Unauthorized action.');
+        }
+
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'client' => 'required|string|max:255',
@@ -37,6 +41,10 @@ class ProjectController extends Controller
 
     public function update(Request $request, Project $project)
     {
+        if ($request->user()->role === 'worker') {
+            abort(403, 'Unauthorized action.');
+        }
+
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'client' => 'required|string|max:255',
@@ -54,6 +62,10 @@ class ProjectController extends Controller
 
     public function destroy(Project $project)
     {
+        if (request()->user()->role === 'worker') {
+            abort(403, 'Unauthorized action.');
+        }
+
         $project->delete();
         return redirect()->back()->with('success', 'Project deleted successfully.');
     }

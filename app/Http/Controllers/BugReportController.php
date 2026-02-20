@@ -37,6 +37,10 @@ class BugReportController extends Controller
 
     public function updateStatus(Request $request, BugReport $bugReport)
     {
+        if (!in_array($request->user()->role, ['admin', 'superadmin'])) {
+            abort(403, 'Unauthorized action.');
+        }
+
         $validated = $request->validate([
             'status' => 'required|in:open,in_progress,resolved,closed',
         ]);
@@ -48,6 +52,10 @@ class BugReportController extends Controller
 
     public function destroy(BugReport $bugReport)
     {
+        if (!in_array(request()->user()->role, ['admin', 'superadmin'])) {
+            abort(403, 'Unauthorized action.');
+        }
+
         $bugReport->delete();
         return back()->with('success', 'Bug report deleted.');
     }
