@@ -64,11 +64,17 @@ php artisan migrate --seed
 ```
 
 ### 4. Running the Ecosystem
+To start the development environment, you need to run the backend and frontend servers in two separate terminal windows:
+
+**Terminal 1 (Backend Server):**
 ```bash
-# Start development environment
+php artisan serve
+```
+
+**Terminal 2 (Frontend Vite Server):**
+```bash
 npm run dev
 ```
-*Note: `npm run dev` handles both Vite and Laravel server concurrently.*
 
 ---
 
